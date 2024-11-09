@@ -9,6 +9,7 @@ import chalk from "chalk";
 import dotenv from "dotenv";
 import path from "path";
 import os from "os";
+import { spin } from "tiny-spin";
 
 dotenv.config();
 
@@ -90,7 +91,7 @@ async function addEnvToZshrc() {
 }
 
 function loadTokens() {
-  if (fs.existsSync(TOKEN_PATH)) {
+  if (fs.existsSync(TOKEN_PATH) && fs.statSync(TOKEN_PATH).size > 0) {
     try {
       const tokens = JSON.parse(fs.readFileSync(TOKEN_PATH, "utf8"));
       oAuth2Client.setCredentials(tokens);
