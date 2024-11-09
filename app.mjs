@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 
-import { google } from "googleapis";
-import { Command } from "commander";
-import fs from "fs";
-import express from "express";
-import { spin } from "tiny-spin";
+const { google } = require("googleapis");
+const { Command } = require("commander");
+const fs = require("fs");
+const express = require("express");
 import chalk from "chalk";
-import dotenv from "dotenv";
+const dotenv = require("dotenv");
 
 dotenv.config();
 
