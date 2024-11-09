@@ -2,10 +2,13 @@
 
 import { google } from "googleapis";
 import { Command } from "commander";
+import inquirer from "inquirer";
 import fs from "fs";
 import express from "express";
 import chalk from "chalk";
 import dotenv from "dotenv";
+import path from "path";
+import os from "os";
 
 dotenv.config();
 
@@ -24,12 +27,32 @@ const oAuth2Client = new google.auth.OAuth2({
 
 const TOKEN_PATH = ".token.json";
 
-function addEnvToZshrc() {
+async function addEnvToZshrc() {
   const zshrcPath = path.join(os.homedir(), ".zshrc");
+
+  // 1. 사용자에게 환경변수 입력을 요청
+  const answers = await inquirer.prompt([
+    {
+      type: "input",
+      name: "ICH_ENV_SHEET_ID",
+      message: "Enter Google Sheet ID:",
+    },
+    {
+      type: "input",
+      name: "ICH_ENV_GOOGLE_CLIENT_ID",
+      message: "Enter Google Client ID:",
+    },
+    {
+      type: "input",
+      name: "ICH_ENV_GOOGLE_CLIENT_SECRET",
+      message: "Enter Google Client Secret:",
+    },
+  ]);
+
   const envVariables = [
-    `export ICH_ENV_SHEET_ID=${process.env.ICH_ENV_SHEET_ID}`,
-    `export ICH_ENV_GOOGLE_CLIENT_ID=${process.env.ICH_ENV_GOOGLE_CLIENT_ID}`,
-    `export ICH_ENV_GOOGLE_CLIENT_SECRET=${process.env.ICH_ENV_GOOGLE_CLIENT_SECRET}`,
+    `export ICH_ENV_SHEET_ID=${answers.ICH_ENV_SHEET_ID}`,
+    `export ICH_ENV_GOOGLE_CLIENT_ID=${answers.ICH_ENV_GOOGLE_CLIENT_ID}`,
+    `export ICH_ENV_GOOGLE_CLIENT_SECRET=${answers.ICH_ENV_GOOGLE_CLIENT_SECRET}`,
   ];
 
   try {
@@ -196,7 +219,6 @@ async function fetchSheetData(auth, envFileName) {
 }
 
 async function chooseEnvironments() {
-  const inquirer = (await import("inquirer")).default;
   const answers = await inquirer.prompt([
     {
       type: "checkbox",
