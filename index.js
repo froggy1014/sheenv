@@ -210,11 +210,14 @@ async function chooseEnvironments() {
 }
 
 program
-  .command("env")
+  .command("set-env")
   .description("Add environment variables to .zshrc")
   .action(() => {
     addEnvToZshrc();
-  })
+  });
+
+program
+  .command("env")
   .description("Select environments and fetch Google Sheets data")
   .action(async () => {
     try {
