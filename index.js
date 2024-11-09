@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-const { google } = require("googleapis");
-const { Command } = require("commander");
-const fs = require("fs");
-const express = require("express");
+import { google } from "googleapis";
+import { Command } from "commander";
+import fs from "fs";
+import express from "express";
 import chalk from "chalk";
-const dotenv = require("dotenv");
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -23,6 +23,48 @@ const oAuth2Client = new google.auth.OAuth2({
 });
 
 const TOKEN_PATH = ".token.json";
+
+function addEnvToZshrc() {
+  const zshrcPath = path.join(os.homedir(), ".zshrc");
+  const envVariables = [
+    `export ICH_ENV_SHEET_ID=${process.env.ICH_ENV_SHEET_ID}`,
+    `export ICH_ENV_GOOGLE_CLIENT_ID=${process.env.ICH_ENV_GOOGLE_CLIENT_ID}`,
+    `export ICH_ENV_GOOGLE_CLIENT_SECRET=${process.env.ICH_ENV_GOOGLE_CLIENT_SECRET}`,
+  ];
+
+  try {
+    let zshrcContent = fs.existsSync(zshrcPath)
+      ? fs.readFileSync(zshrcPath, "utf8")
+      : "";
+
+    let changesMade = false;
+
+    envVariables.forEach((envVar) => {
+      const [key] = envVar.split("=");
+
+      if (!zshrcContent.includes(key)) {
+        zshrcContent += `\n${envVar}`;
+        changesMade = true;
+      }
+    });
+
+    if (changesMade) {
+      fs.writeFileSync(zshrcPath, zshrcContent, "utf8");
+      console.log(
+        chalk.green("Environment variables have been added to .zshrc")
+      );
+      console.log(
+        chalk.yellow("Run `source ~/.zshrc` to apply the changes immediately.")
+      );
+    } else {
+      console.log(
+        chalk.blue("Environment variables are already present in .zshrc")
+      );
+    }
+  } catch (error) {
+    console.error(chalk.red("Error updating .zshrc:", error));
+  }
+}
 
 function loadTokens() {
   if (fs.existsSync(TOKEN_PATH)) {
@@ -169,6 +211,10 @@ async function chooseEnvironments() {
 
 program
   .command("env")
+  .description("Add environment variables to .zshrc")
+  .action(() => {
+    addEnvToZshrc();
+  })
   .description("Select environments and fetch Google Sheets data")
   .action(async () => {
     try {
