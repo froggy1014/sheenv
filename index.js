@@ -9,6 +9,7 @@ import chalk from "chalk";
 import dotenv from "dotenv";
 import path from "path";
 import os from "os";
+import open from "open";
 import { spin } from "tiny-spin";
 
 dotenv.config();
@@ -26,12 +27,21 @@ const oAuth2Client = new google.auth.OAuth2({
   redirectUri: redirectURI,
 });
 
-const TOKEN_PATH = ".token.json";
+// 필요한 환경 변수가 설정되어 있는지 확인하는 함수
+function checkEnvVariables() {
+  const requiredVars = ["ICH_ENV_SHEET_ID", "ICH_ENV_GOOGLE_CLIENT_ID", "ICH_ENV_GOOGLE_CLIENT_SECRET"];
+  const missingVars = requiredVars.filter((key) => !process.env[key]);
+
+  if (missingVars.length > 0) {
+    throw new Error(
+      `Missing environment variables: ${missingVars.join(", ")}. Please run "env-sheet-cli set-env" first to configure the required variables.`
+    );
+  }
+}
 
 async function addEnvToZshrc() {
   const zshrcPath = path.join(os.homedir(), ".zshrc");
 
-  // 1. 사용자에게 환경변수 입력을 요청
   const answers = await inquirer.prompt([
     {
       type: "input",
@@ -57,9 +67,7 @@ async function addEnvToZshrc() {
   ];
 
   try {
-    let zshrcContent = fs.existsSync(zshrcPath)
-      ? fs.readFileSync(zshrcPath, "utf8")
-      : "";
+    let zshrcContent = fs.existsSync(zshrcPath) ? fs.readFileSync(zshrcPath, "utf8") : "";
 
     let changesMade = false;
 
@@ -74,53 +82,13 @@ async function addEnvToZshrc() {
 
     if (changesMade) {
       fs.writeFileSync(zshrcPath, zshrcContent, "utf8");
-      console.log(
-        chalk.green("Environment variables have been added to .zshrc")
-      );
-      console.log(
-        chalk.yellow("Run `source ~/.zshrc` to apply the changes immediately.")
-      );
+      console.log(chalk.green("Environment variables have been added to .zshrc"));
+      console.log(chalk.yellow("Run `source ~/.zshrc` to apply the changes immediately."));
     } else {
-      console.log(
-        chalk.blue("Environment variables are already present in .zshrc")
-      );
+      console.log(chalk.blue("Environment variables are already present in .zshrc"));
     }
   } catch (error) {
     console.error(chalk.red("Error updating .zshrc:", error));
-  }
-}
-
-function loadTokens() {
-  if (fs.existsSync(TOKEN_PATH) && fs.statSync(TOKEN_PATH).size > 0) {
-    try {
-      const tokens = JSON.parse(fs.readFileSync(TOKEN_PATH, "utf8"));
-      oAuth2Client.setCredentials(tokens);
-      console.log(chalk.yellow("Token loaded from file."));
-      return true;
-    } catch (error) {
-      console.error(
-        chalk.red("Error loading token, initiating new OAuth flow:", error)
-      );
-    }
-  }
-  return false;
-}
-
-function saveTokens(tokens) {
-  fs.writeFileSync(TOKEN_PATH, JSON.stringify(tokens), "utf8");
-  console.log("Tokens saved to file.");
-}
-
-async function validateTokens() {
-  try {
-    await oAuth2Client.getAccessToken();
-    console.log(chalk.greenBright("Token is valid."));
-    return true;
-  } catch (error) {
-    console.error(
-      chalk.red("Token validation failed, initiating OAuth flow:", error)
-    );
-    return false;
   }
 }
 
@@ -130,10 +98,10 @@ async function getGoogleAuthToken() {
     scope: ["https://www.googleapis.com/auth/spreadsheets.readonly"],
   });
 
-  const open = (await import("open")).default;
   await open(authUrl);
 
   const app = express();
+
   const stop = spin("Waiting for authentication...");
 
   return new Promise((resolve, reject) => {
@@ -141,10 +109,10 @@ async function getGoogleAuthToken() {
       stop();
       console.error(chalk.red("Authentication timed out. Please try again."));
       reject(new Error("Authentication timed out"));
-    }, 60000); // 1-minute timeout
+    }, 30000);
 
     app.get("/oauth2callback", async (req, res) => {
-      clearTimeout(timeout); // Clear timeout if authentication is successful
+      clearTimeout(timeout);
 
       const code = req.query.code;
       if (!code) {
@@ -158,13 +126,12 @@ async function getGoogleAuthToken() {
       try {
         const { tokens } = await oAuth2Client.getToken(code);
         oAuth2Client.setCredentials(tokens);
-        saveTokens(tokens);
         stop();
         console.log("Tokens acquired:", tokens);
         res.send(`
           <html>
-            <body>
-              <p>Authentication successful!</p>
+            <body style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+              <h3>Environment Create Successfully. Please close this tab</h3>
             </body>
           </html>
         `);
@@ -180,9 +147,7 @@ async function getGoogleAuthToken() {
     });
 
     const server = app.listen(PORT, () => {
-      console.log(
-        `Listening on http://localhost:${PORT} for OAuth2 callback...`
-      );
+      console.log(`Listening on http://localhost:${PORT} for OAuth2 callback...`);
     });
   });
 }
@@ -191,7 +156,23 @@ async function fetchSheetData(auth, envFileName) {
   const sheets = google.sheets({ version: "v4", auth });
   const spreadsheetId = process.env.ICH_ENV_SHEET_ID;
 
-  const range = "Sheet1!A1";
+  let range;
+  switch (envFileName) {
+    case ".env.local":
+      range = "Sheet1!A1";
+      break;
+    case ".env.dev":
+      range = "Sheet1!B1";
+      break;
+    case ".env.stg":
+      range = "Sheet1!C1";
+      break;
+    case ".env.production":
+      range = "Sheet1!D1";
+      break;
+    default:
+      throw new Error(`Unknown environment file name: ${envFileName}`);
+  }
 
   const stop = spin(`Fetching data for ${envFileName}...`);
   try {
@@ -206,9 +187,7 @@ async function fetchSheetData(auth, envFileName) {
       fs.writeFileSync(envFileName, envData);
 
       stop();
-      console.log(
-        chalk.blueBright(`${envFileName} 파일이 업데이트되었습니다.`)
-      );
+      console.log(chalk.blueBright(`${envFileName} 파일이 업데이트되었습니다.`));
     } else {
       stop();
       console.log("No data found.");
@@ -244,6 +223,9 @@ program
   .description("Select environments and fetch Google Sheets data")
   .action(async () => {
     try {
+      // 환경 변수 체크
+      checkEnvVariables();
+
       const envFileNames = await chooseEnvironments();
 
       if (!envFileNames.length) {
@@ -251,16 +233,9 @@ program
         process.exit(1);
       }
 
-      let stop;
-      const tokensLoaded = loadTokens();
-      const tokensValid = tokensLoaded ? await validateTokens() : false;
-
-      if (!tokensLoaded || !tokensValid) {
-        stop = spin("Authenticating...");
-        const tokens = await getGoogleAuthToken();
-        saveTokens(tokens);
-        stop();
-      }
+      const stop = spin("Authenticating...");
+      await getGoogleAuthToken();
+      stop();
 
       for (const envFileName of envFileNames) {
         await fetchSheetData(oAuth2Client, envFileName);
@@ -269,9 +244,7 @@ program
       console.log(chalk.greenBright("Environment files created successfully!"));
       process.exit(0);
     } catch (error) {
-      console.error(
-        chalk.red("Error during environment selection or data fetching:", error)
-      );
+      console.error(chalk.red("Error:", error.message));
       process.exit(1);
     }
   });
