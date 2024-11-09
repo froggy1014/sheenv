@@ -1,6 +1,6 @@
 {
   "name": "env-sheet-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
   "bin": {
     "env-sheet-cli": "./app.js"
