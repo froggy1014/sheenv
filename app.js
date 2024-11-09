@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { google } from "googleapis";
 import { Command } from "commander";
 import fs from "fs";
