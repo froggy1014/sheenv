@@ -7,14 +7,14 @@ import path, { dirname } from "path";
 import { spin } from "tiny-spin";
 import { fileURLToPath } from "url";
 
-import { EnvironmentPrompts as envPrompts } from "./environment/EnvironmentPrompts.js";
-import { EnvironmentService } from "./environment/EnvironmentService.js";
-import { EnvironmentStorageService } from "./environment/EnvironmentStorageService.js";
+import { EnvironmentPrompts as envPrompts } from "../src/environment/EnvironmentPrompts.js";
+import { EnvironmentService } from "../src/environment/EnvironmentService.js";
+import { EnvironmentStorageService } from "../src/environment/EnvironmentStorageService.js";
 
-import { OAuthService } from "./oauth/OAuthService.js";
-import { ProfilePrompts } from "./profile/ProfilePrompts.js";
-import { ProfileService } from "./profile/ProfileService.js";
-import { ProfileStorageService } from "./profile/ProfileStorageService.js";
+import { OAuthService } from "../src/oauth/OAuthService.js";
+import { ProfilePrompts } from "../src/profile/ProfilePrompts.js";
+import { ProfileService } from "../src/profile/ProfileService.js";
+import { ProfileStorageService } from "../src/profile/ProfileStorageService.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -54,7 +54,6 @@ program
         }
       })
   );
-
 
 program
   .command("env")
