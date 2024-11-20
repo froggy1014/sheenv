@@ -1,6 +1,7 @@
-.token.json
+node_modules/
 
 .env
 .env.*
 
-node_modules/
+profiles/*
+!profiles/.gitkeep
