@@ -22,9 +22,7 @@ export class EnvironmentService {
       this.storageService.checkEnvironmentVariables();
 
     if (!hasEnvironmentVariables) {
-      console.log(
-        chalk.yellow("Run `env-sheet-cli update-env` to use this command")
-      );
+      console.log(chalk.yellow("Run `env init` to use this command"));
       process.exit(1);
     }
   }
