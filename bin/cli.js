@@ -27,7 +27,7 @@ const profileService = new ProfileService(storageService);
 
 const oAuthService = new OAuthService(
   envService.clientId,
-  envService.clientSecret
+  envService.clientSecret,
 );
 
 const program = new Command();
@@ -44,15 +44,15 @@ program
           const result = await profileService.createProfile(
             profileData.name,
             profileData.sheet,
-            profileData.range
+            profileData.range,
           );
           console.log(
-            chalk.green(`Profile ${result.name} created successfully`)
+            chalk.green(`Profile ${result.name} created successfully`),
           );
         } catch (error) {
           console.error(chalk.red(error.message));
         }
-      })
+      }),
   );
 
 program
@@ -70,8 +70,8 @@ program
           if (choices.length < 1) {
             console.log(
               chalk.yellow(
-                "Run `env-sheet-cli profile add` to use this command"
-              )
+                "Run `env-sheet-cli profile add` to use this command",
+              ),
             );
             process.exit(1);
           }
@@ -98,7 +98,7 @@ program
             await envService.getEnvironmentVariables(
               authClient,
               envFileName,
-              range
+              range,
             );
           }
 
@@ -107,7 +107,7 @@ program
           console.error(chalk.red("Error:", error.message));
           process.exit(1);
         }
-      })
+      }),
   )
   .addCommand(
     new Command("init")
@@ -119,7 +119,7 @@ program
         } catch (error) {
           console.error(chalk.red(error.message));
         }
-      })
+      }),
   );
 
 program.parse(process.argv);

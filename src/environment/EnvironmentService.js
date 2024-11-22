@@ -7,13 +7,13 @@ export class EnvironmentService {
   constructor(storageService) {
     this.storageService = storageService;
     this.clientId = storageService.getEnvironmentVariable(
-      REQUIRED_VARIABLES.GOOGLE_CLIENT_ID
+      REQUIRED_VARIABLES.GOOGLE_CLIENT_ID,
     );
     this.clientSecret = storageService.getEnvironmentVariable(
-      REQUIRED_VARIABLES.GOOGLE_CLIENT_SECRET
+      REQUIRED_VARIABLES.GOOGLE_CLIENT_SECRET,
     );
     this.sheetId = storageService.getEnvironmentVariable(
-      REQUIRED_VARIABLES.SHEET_ID
+      REQUIRED_VARIABLES.SHEET_ID,
     );
   }
 
@@ -34,17 +34,17 @@ export class EnvironmentService {
 
       if (changesMade) {
         console.log(
-          chalk.green("Environment variables have been added to .zshrc")
+          chalk.green("Environment variables have been added to .zshrc"),
         );
         console.log(
           chalk.yellow(
-            "Run `source ~/.zshrc` to apply the changes immediately."
-          )
+            "Run `source ~/.zshrc` to apply the changes immediately.",
+          ),
         );
       }
     } catch (error) {
       throw new Error(
-        `Failed to update environment variables: ${error.message}`
+        `Failed to update environment variables: ${error.message}`,
       );
     }
   }
