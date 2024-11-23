@@ -39,9 +39,9 @@ importers:
       '@changesets/cli':
         specifier: ^2.27.10
         version: 2.27.10
-      typescript:
-        specifier: ^5.6.3
-        version: 5.6.3
+      lefthook:
+        specifier: ^1.8.4
+        version: 1.8.4
 
 packages:
 
@@ -662,6 +662,60 @@ packages:
   jws@4.0.0:
     resolution: {integrity: sha512-KDncfTmOZoOMTFG4mBlG0qUIOlc03fmzH+ru6RgYVZhPkyiy/92Owlt/8UEN+a4TXR1FQetfIpJE8ApdvdVxTg==}
 
+  lefthook-darwin-arm64@1.8.4:
+    resolution: {integrity: sha512-OS5MsU0gvd8LYSpuQCHtmDUqwNrJ/LjCO0LGC1wNepY4OkuVl9DfX+rQ506CVUQYZiGVcwy2/qPOOBjNzA5+wQ==}
+    cpu: [arm64]
+    os: [darwin]
+
+  lefthook-darwin-x64@1.8.4:
+    resolution: {integrity: sha512-QLRsqK9aTMRcVW8qz4pzI2OWnGCEcaEPJlIiFjwstYsS+wfkooxOS0UkfVMjy+QoGgEcki+cxF/FoY7lE7DDtw==}
+    cpu: [x64]
+    os: [darwin]
+
+  lefthook-freebsd-arm64@1.8.4:
+    resolution: {integrity: sha512-chnQ1m/Cmn9c0sLdk5HL2SToE5LBJv5uQMdH1IGRRcw+nEqWqrMnDXvM75caiJAyjmUGvPH3czKTJDzTFV1E+A==}
+    cpu: [arm64]
+    os: [freebsd]
+
+  lefthook-freebsd-x64@1.8.4:
+    resolution: {integrity: sha512-KQi+WBUdnGLnK0rHOR58kbMH5TDVN1ZjZLu66Pv9FCG7Y7shR1qtaTXu+wmxdRhMvaLeQIXRsUEPjNRC66yMmA==}
+    cpu: [x64]
+    os: [freebsd]
+
+  lefthook-linux-arm64@1.8.4:
+    resolution: {integrity: sha512-CXNcqIskLwTwQARidGdFqmNxpvOU3jsWPK4KA7pq2+QmlWJ64w98ebMvNBoUmRUCXqzmUm7Udf/jpfz2fobewQ==}
+    cpu: [arm64]
+    os: [linux]
+
+  lefthook-linux-x64@1.8.4:
+    resolution: {integrity: sha512-pVNITkFBxUCEtamWSM/res2Gd48+m9YKbNyIBndAuZVC5pKV5aGKZy2DNq6PWUPYiUDPx+7hoAtCJg/tlAiqhw==}
+    cpu: [x64]
+    os: [linux]
+
+  lefthook-openbsd-arm64@1.8.4:
+    resolution: {integrity: sha512-l+i/Dg5X36kYzhpMGSPE3rMbWy1KSytbLB9lY1PmxYb6LRH6iQTYIoxvLabVUwSBPSq8HtIFa50+bvC5+scfVA==}
+    cpu: [arm64]
+    os: [openbsd]
+
+  lefthook-openbsd-x64@1.8.4:
+    resolution: {integrity: sha512-CqhDDPPX8oHzMLgNi/Reba823DRzj+eMNWQ8axvSiIG+zmG1w20xZH5QSs/mD3tjrND90yfDd90mWMt181qPyA==}
+    cpu: [x64]
+    os: [openbsd]
+
+  lefthook-windows-arm64@1.8.4:
+    resolution: {integrity: sha512-dvpvorICmVjmw29Aiczg7DcaSzkd86bEBomiGq4UsAEk3+7ExLrlWJDLFsI6xLjMKmTxy+F7eXb2uDtuFC1N4g==}
+    cpu: [arm64]
+    os: [win32]
+
+  lefthook-windows-x64@1.8.4:
+    resolution: {integrity: sha512-e+y8Jt4/7PnoplhOuK48twjGVJEsU4T3J5kxD4mWfl6Cbit0YSn4bme9nW41eqCqTUqOm+ky29XlfnPHFX5ZNA==}
+    cpu: [x64]
+    os: [win32]
+
+  lefthook@1.8.4:
+    resolution: {integrity: sha512-XNyMaTWNRuADOaocYiHidgNkNDz8SCekpdNJ7lqceFcBT2zjumnb28/o7IMaNROpLBZdQkLkJXSeaQWGqn3kog==}
+    hasBin: true
+
   locate-path@5.0.0:
     resolution: {integrity: sha512-t7hw9pI+WvuwNJXwk5zVHpyhIqzg2qTlklJOf0mVxGSbe3Fp2VieZcduNYjaLDoy6p9uGpQEGWG87WpMKlNq8g==}
     engines: {node: '>=8'}
@@ -961,11 +1015,6 @@ packages:
   type-is@1.6.18:
     resolution: {integrity: sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g==}
     engines: {node: '>= 0.6'}
-
-  typescript@5.6.3:
-    resolution: {integrity: sha512-hjcS1mhfuyi4WW8IWtjP7brDrG2cuDZukyrYrSauoXGNgx0S7zceP07adYkJycEr56BOUTNPzbInooiN3fn1qw==}
-    engines: {node: '>=14.17'}
-    hasBin: true
 
   universalify@0.1.2:
     resolution: {integrity: sha512-rBJeI5CXAlmy1pV+617WB9J63U6XcazHHF2f2dbJix4XzpUF0RS3Zbj0FGIOCAva5P/d/GBOYaACQ1w+0azUkg==}
@@ -1785,6 +1834,49 @@ snapshots:
       jwa: 2.0.0
       safe-buffer: 5.2.1
 
+  lefthook-darwin-arm64@1.8.4:
+    optional: true
+
+  lefthook-darwin-x64@1.8.4:
+    optional: true
+
+  lefthook-freebsd-arm64@1.8.4:
+    optional: true
+
+  lefthook-freebsd-x64@1.8.4:
+    optional: true
+
+  lefthook-linux-arm64@1.8.4:
+    optional: true
+
+  lefthook-linux-x64@1.8.4:
+    optional: true
+
+  lefthook-openbsd-arm64@1.8.4:
+    optional: true
+
+  lefthook-openbsd-x64@1.8.4:
+    optional: true
+
+  lefthook-windows-arm64@1.8.4:
+    optional: true
+
+  lefthook-windows-x64@1.8.4:
+    optional: true
+
+  lefthook@1.8.4:
+    optionalDependencies:
+      lefthook-darwin-arm64: 1.8.4
+      lefthook-darwin-x64: 1.8.4
+      lefthook-freebsd-arm64: 1.8.4
+      lefthook-freebsd-x64: 1.8.4
+      lefthook-linux-arm64: 1.8.4
+      lefthook-linux-x64: 1.8.4
+      lefthook-openbsd-arm64: 1.8.4
+      lefthook-openbsd-x64: 1.8.4
+      lefthook-windows-arm64: 1.8.4
+      lefthook-windows-x64: 1.8.4
+
   locate-path@5.0.0:
     dependencies:
       p-locate: 4.1.0
@@ -2036,8 +2128,6 @@ snapshots:
     dependencies:
       media-typer: 0.3.0
       mime-types: 2.1.35
-
-  typescript@5.6.3: {}
 
   universalify@0.1.2: {}
 
