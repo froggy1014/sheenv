@@ -1,7 +1,7 @@
+import fs from "fs";
 import chalk from "chalk";
 import { google } from "googleapis";
 import { REQUIRED_VARIABLES } from "../constants/index.js";
-import fs from "fs";
 
 export class EnvironmentService {
   constructor(storageService) {
@@ -61,7 +61,7 @@ export class EnvironmentService {
 
       const rows = response.data.values;
 
-      if (rows && rows.length) {
+      if (rows?.length) {
         const envDataArray = rows.flat();
         let envData = envDataArray.join("\n");
         envData = envData.replace(/\n+/g, "\n");
