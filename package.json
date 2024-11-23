@@ -1,13 +1,14 @@
 {
   "name": "env-sheet-cli",
   "version": "1.2.1",
-  "main": "index.js",
-  "type": "module",
+  "main": "./bin/cli.js",
   "bin": {
-    "env-sheet-cli": "./bin/index.js"
+    "env-sheet-cli": "./bin/cli.js"
   },
   "scripts": {
+    "commit": "./node_modules/cz-customizable/standalone.js",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky",
     "ci:publish": "pnpm publish -r",
     "release": "changeset publish"
   },
@@ -27,9 +28,33 @@
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
     "@changesets/cli": "^2.27.10",
-    "lefthook": "^1.8.4"
+    "@commitlint/cli": "^19.6.0",
+    "@commitlint/config-conventional": "^19.6.0",
+    "cz-conventional-changelog": "^3.3.0",
+    "cz-customizable": "^7.1.0",
+    "commitizen": "^4.3.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.2.10"
   },
   "publishConfig": {
     "access": "public"
+  },
+  "lint-staged": {
+    "*.{js,ts}": [
+      "biome check --files-ignore-unknown=true --fix",
+      "biome check --write --no-errors-on-unmatched",
+      "biome check --write --organize-imports-enabled=false --no-errors-on-unmatched",
+      "biome check --write --unsafe --no-errors-on-unmatched",
+      "biome format --write --no-errors-on-unmatched",
+      "biome lint --write --no-errors-on-unmatched"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-customizable"
+    },
+    "cz-customizable": {
+      "config": ".cz-config.js"
+    }
   }
 }

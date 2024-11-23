@@ -14,7 +14,13 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true
+      "style": {
+        "useNodejsImportProtocol": "off"
+      },
+      "complexity": {
+        "noForEach": "off",
+        "noStaticOnlyClass": "off"
+      }
     }
   },
   "javascript": {
