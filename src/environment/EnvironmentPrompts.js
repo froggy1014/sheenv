@@ -1,37 +1,17 @@
-import inquirer from "inquirer";
 import chalk from "chalk";
+import inquirer from "inquirer";
 
 export class EnvironmentPrompts {
-  static async promptForEnvironmentVars() {
-    return await inquirer.prompt([
-      {
-        type: "input",
-        name: "ENV_SHEET_ID",
-        message: "Enter Google Sheet ID:",
-      },
-      {
-        type: "input",
-        name: "ENV_GOOGLE_CLIENT_ID",
-        message: "Enter Google Client ID:",
-      },
-      {
-        type: "input",
-        name: "ENV_GOOGLE_CLIENT_SECRET",
-        message: "Enter Google Client Secret:",
-      },
-    ]);
-  }
-
   static async promptForSelectProfile(profileList) {
     const answers = await inquirer.prompt([
       {
-        type: "checkbox",
-        name: "environments",
-        message: chalk.white("Select the environments to generate .env files:"),
+        type: "list",
+        name: "environment",
+        message: chalk.white("Select the environment to generate .env file:"),
         choices: profileList,
       },
     ]);
 
-    return answers.environments;
+    return answers.environment;
   }
 }

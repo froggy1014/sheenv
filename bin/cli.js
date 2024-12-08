@@ -2,14 +2,13 @@
 
 import { Command } from "commander";
 
-import chalk from "chalk";
 import path, { dirname } from "path";
-import { spin } from "tiny-spin";
 import { fileURLToPath } from "url";
+import chalk from "chalk";
+import { spin } from "tiny-spin";
 
 import { EnvironmentPrompts as envPrompts } from "../src/environment/EnvironmentPrompts.js";
 import { EnvironmentService } from "../src/environment/EnvironmentService.js";
-import { EnvironmentStorageService } from "../src/environment/EnvironmentStorageService.js";
 
 import { OAuthService } from "../src/oauth/OAuthService.js";
 import { ProfilePrompts } from "../src/profile/ProfilePrompts.js";
@@ -20,15 +19,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const profilesDir = path.resolve(__dirname, "profiles");
 
-const envStorageService = new EnvironmentStorageService();
-const envService = new EnvironmentService(envStorageService);
+const envService = new EnvironmentService();
 const storageService = new ProfileStorageService(profilesDir);
 const profileService = new ProfileService(storageService);
-
-const oAuthService = new OAuthService(
-  envService.clientId,
-  envService.clientSecret,
-);
 
 const program = new Command();
 
@@ -45,6 +38,9 @@ program
             profileData.name,
             profileData.sheet,
             profileData.range,
+            profileData.sheetId,
+            profileData.clientId,
+            profileData.clientIdSecret,
           );
           console.log(
             chalk.green(`Profile ${result.name} created successfully`),
@@ -63,61 +59,42 @@ program
       .description("Fetch environment variables from Google Sheets")
       .action(async () => {
         try {
-          await envService.checkHasRequiredEnvironmentVariables();
-
           const choices = storageService.getProfileNames();
 
           if (choices.length < 1) {
             console.log(
-              chalk.yellow(
-                "Run `env-sheet-cli profile add` to use this command",
-              ),
+              chalk.yellow("Run `sheenv profile add` to use this command"),
             );
             process.exit(1);
           }
 
-          const envFileNames = await envPrompts.promptForSelectProfile(choices);
+          const envFileName = await envPrompts.promptForSelectProfile(choices);
 
-          if (!envFileNames.length) {
-            console.log("No environment selected.");
-            process.exit(1);
-          }
+          const { RANGE, SHEET_ID, CLIENT_ID, CLIENT_ID_SECRET } =
+            storageService.getProfile(envFileName);
+
+          const oAuthService = new OAuthService(CLIENT_ID, CLIENT_ID_SECRET);
 
           const stop = spin("Authenticating...");
           const authClient = await oAuthService.getAuthToken();
           stop();
 
-          for (const envFileName of envFileNames) {
-            const range = storageService.getRangeFromProfile(envFileName);
-
-            if (!range) {
-              console.error("Invalid profile format.");
-              return;
-            }
-
-            await envService.getEnvironmentVariables(
-              authClient,
-              envFileName,
-              range,
-            );
+          if (!RANGE) {
+            console.error("Invalid profile format.");
+            return;
           }
+
+          await envService.getEnvironmentVariables(
+            authClient,
+            envFileName,
+            RANGE,
+            SHEET_ID,
+          );
 
           process.exit(0);
         } catch (error) {
           console.error(chalk.red("Error:", error.message));
           process.exit(1);
-        }
-      }),
-  )
-  .addCommand(
-    new Command("init")
-      .description("Initialize environment variables in .zshrc")
-      .action(async () => {
-        try {
-          const variables = await envPrompts.promptForEnvironmentVars();
-          await envService.updateEnvironmentVariables(variables);
-        } catch (error) {
-          console.error(chalk.red(error.message));
         }
       }),
   );
