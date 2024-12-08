@@ -6,6 +6,11 @@ on:
 env:
   CI: true
   PNPM_CACHE_FOLDER: .pnpm-store
+
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   version:
     timeout-minutes: 15
@@ -45,7 +50,7 @@ jobs:
           publish: pnpm ci:publish --no-git-checks
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          HUSKY: 0 
+          HUSKY: 0
 
       - name: Check Git Status After Changesets
         run: git status
