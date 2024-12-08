@@ -1,17 +1,16 @@
 {
   "name": "sheenv",
-  "version": "0.0.6",
+  "version": "0.0.0",
   "main": "./bin/cli.js",
   "bin": {
     "sheenv": "./bin/cli.js"
   },
   "scripts": {
-    "commit": "./node_modules/cz-customizable/standalone.js",
+    "commit": "cz",
     "prepare": "husky",
     "ci:version": "changeset version",
-    "ci:publish": "pnpm publish --access public",
-    "release": "changeset publish",
-    "postpublish": "node ./scripts/add-type-module.js"
+    "ci:publish": "node ./scripts/add-type-module.js && pnpm publish --access public",
+    "release": "changeset publish"
   },
   "keywords": [],
   "author": "froggy1014",

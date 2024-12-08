@@ -1,17 +1,23 @@
-import fs from "fs";
-import path from "path";
+// scripts/add-type-module.js
+const fs = require("fs");
+const path = require("path");
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
+// Get the path to the package.json
 const packageJsonPath = path.resolve(__dirname, "../package.json");
 
 try {
+  // Read the current package.json
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
 
-  // Modify package.json as needed
-  packageJson.type = "module";
+  // Add the "type": "module" property if not already there
+  if (!packageJson.type) {
+    packageJson.type = "module";
+  }
 
+  // Write the updated package.json back to disk
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
-  console.log('package.json updated with "type": "module"');
+
+  console.log('Successfully added "type": "module" to package.json');
 } catch (error) {
-  console.error("Error reading or writing package.json:", error);
+  console.error("Error modifying package.json:", error);
 }
