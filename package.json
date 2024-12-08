@@ -1,6 +1,6 @@
 {
   "name": "sheenv",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "./bin/cli.js",
   "bin": {
     "sheenv": "./bin/cli.js"
