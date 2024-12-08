@@ -9,6 +9,7 @@
     "commit": "./node_modules/cz-customizable/standalone.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky",
+    "ci:version": "changeset version",
     "ci:publish": "pnpm publish -r",
     "release": "changeset publish"
   },
