@@ -1,6 +1,6 @@
-import fs from "fs";
+const fs = require("fs");
 
-const packageJsonPath = "./package.json";
+const packageJsonPath = "../package.json";
 const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
 
 packageJson.type = "module";
