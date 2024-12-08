@@ -1,9 +1,9 @@
 {
-  "name": "env-sheet-cli",
-  "version": "1.2.1",
+  "name": "sheenv",
+  "version": "0.0.1",
   "main": "./bin/cli.js",
   "bin": {
-    "env-sheet-cli": "./bin/cli.js"
+    "sheenv": "./bin/cli.js"
   },
   "scripts": {
     "commit": "./node_modules/cz-customizable/standalone.js",
@@ -13,7 +13,7 @@
     "release": "changeset publish"
   },
   "keywords": [],
-  "author": "",
+  "author": "froggy1014",
   "license": "ISC",
   "dependencies": {
     "chalk": "^5.3.0",
