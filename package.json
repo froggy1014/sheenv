@@ -11,7 +11,8 @@
     "prepare": "husky",
     "ci:version": "changeset version",
     "ci:publish": "pnpm publish --access public",
-    "release": "changeset publish"
+    "release": "changeset publish",
+    "postpublish": "node ./scripts/add-type-module.js"
   },
   "keywords": [],
   "author": "froggy1014",
