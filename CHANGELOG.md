@@ -1,5 +1,11 @@
 # sheenv
 
+## 0.0.6
+
+### Patch Changes
+
+- d0d7421: add absolute path
+
 ## 0.0.5
 
 ### Patch Changes
