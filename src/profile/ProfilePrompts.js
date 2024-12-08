@@ -5,6 +5,21 @@ export class ProfilePrompts {
     const answers = await inquirer.prompt([
       {
         type: "input",
+        name: "sheetId",
+        message: "Enter Google Sheet ID:",
+      },
+      {
+        type: "input",
+        name: "clientId",
+        message: "Enter Google Client ID:",
+      },
+      {
+        type: "input",
+        name: "clientIdSecret",
+        message: "Enter Google Client Secret:",
+      },
+      {
+        type: "input",
         name: "name",
         message: "Enter profile name:",
         default: ".env.admin-local",
@@ -44,10 +59,15 @@ export class ProfilePrompts {
       },
     ]);
 
+    const { clientId, clientIdSecret, sheet, sheetId, range, rangeType, name } =
+      answers;
     return {
-      name: answers.name,
-      sheet: answers.sheet,
-      range: answers.range,
+      sheetId,
+      clientId,
+      clientIdSecret,
+      name,
+      sheet,
+      range,
     };
   }
 }

@@ -4,7 +4,7 @@ import path from "path";
 
 export class ProfileStorageService {
   constructor() {
-    this.configDir = path.join(os.homedir(), ".config", "env-sheet-cli");
+    this.configDir = path.join(os.homedir(), ".config", "sheenv");
     this.ensureConfigDirectory();
   }
 
@@ -14,23 +14,32 @@ export class ProfileStorageService {
     }
   }
 
-  saveProfile(name, range) {
+  saveProfile(name, range, sheetId, clientId, clientIdSecret) {
     const envFilePath = path.join(this.configDir, `${name}`);
-    const envContent = `RANGE=${range}\n`;
+    const envContent = `RANGE=${range}
+SHEET_ID=${sheetId}
+CLIENT_ID=${clientId}
+CLIENT_ID_SECRET=${clientIdSecret}
+`;
     fs.writeFileSync(envFilePath, envContent, "utf8");
     return { name, range };
   }
 
-  getRangeFromProfile(profileName) {
+  getProfile(profileName) {
     const filePath = path.join(this.configDir, profileName);
     if (fs.existsSync(filePath)) {
       const content = fs.readFileSync(filePath, "utf8");
-      const match = content.match(/RANGE=(.*)/);
-      return match ? match[1] : null;
+      const profile = {};
+      content.split("\n").forEach((line) => {
+        const [key, value] = line.split("=");
+        if (key && value) {
+          profile[key] = value;
+        }
+      });
+      return profile;
     }
     return null;
   }
-
   getProfileNames() {
     return fs
       .readdirSync(this.configDir)

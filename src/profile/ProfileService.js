@@ -3,15 +3,14 @@ export class ProfileService {
     this.storageService = storageService;
   }
 
-  async createProfile(name, sheet, range) {
-    this.validateRange(range);
+  async createProfile(name, sheet, range, sheetId, clientId, clientIdSecret) {
     const fullRange = `${sheet}!${range}`;
-    return this.storageService.saveProfile(name, fullRange);
-  }
-
-  validateRange(range) {
-    if (!/^[A-Za-z]+[0-9]*(:[A-Za-z]+[0-9]*)?$/.test(range)) {
-      throw new Error("Invalid range format.");
-    }
+    return this.storageService.saveProfile(
+      name,
+      fullRange,
+      sheetId,
+      clientId,
+      clientIdSecret,
+    );
   }
 }
