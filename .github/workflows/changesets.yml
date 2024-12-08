@@ -28,12 +28,14 @@ jobs:
         run: npm i pnpm@latest -g
 
       - name: Setup npmrc
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
+      - name: Debug npmrc
+        run: cat ~/.npmrc
 
       - name: Setup pnpm config
-        run: |
-          pnpm config set store-dir .pnpm-store
-          git clean -fdx
+        run: pnpm config set store-dir .pnpm-store
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -44,7 +46,7 @@ jobs:
           version: pnpm ci:version
           commit: "chore: update versions"
           title: "chore: update versions"
-          publish: pnpm ci:publish --no-git-checks
+          publish: pnpm ci:publish --access public --no-git-checks
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HUSKY: 0

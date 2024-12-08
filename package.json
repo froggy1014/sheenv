@@ -10,7 +10,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky",
     "ci:version": "changeset version",
-    "ci:publish": "pnpm publish -r",
+    "ci:publish": "pnpm publish --access public",
     "release": "changeset publish"
   },
   "keywords": [],
