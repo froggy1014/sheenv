@@ -1,5 +1,11 @@
 # sheenv
 
+## 0.0.5
+
+### Patch Changes
+
+- 32de1c7: modify add-type-module script
+
 ## 0.0.4
 
 ### Patch Changes
