@@ -1,12 +1,17 @@
 const fs = require("fs");
+const path = require("path");
 
-const packageJsonPath = "../package.json";
-const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+// Use the absolute path to package.json
+const packageJsonPath = path.resolve(__dirname, "../package.json");
 
-packageJson.type = "module";
+try {
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
 
-fs.writeFileSync(
-  packageJsonPath,
-  `${JSON.stringify(packageJson, null, 2)}\n`,
-  "utf8",
-);
+  // Modify package.json as needed
+  packageJson.type = "module";
+
+  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+  console.log('package.json updated with "type": "module"');
+} catch (error) {
+  console.error("Error reading or writing package.json:", error);
+}
