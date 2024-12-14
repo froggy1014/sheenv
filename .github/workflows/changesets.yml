@@ -32,7 +32,7 @@ jobs:
         run: cat ~/.npmrc
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Create and publish versions
         uses: changesets/action@v1
