@@ -15,19 +15,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 16
-          cache: pnpm
-
-      - name: pnpm 설치
-        uses: pnpm/action-setup@v4
+          cache: npm
 
       - name: 의존성 설치
-        run: pnpm install
+        run: npm install
 
       - name: 린트
-        run: pnpm lint
+        run: npm run lint
 
       - name: 테스트
-        run: pnpm test
+        run: npm run test
 
       - name: 빌드
-        run: pnpm build
+        run: npm run build
