@@ -3,14 +3,19 @@ import chalk from "chalk";
 import { google } from "googleapis";
 
 export class EnvironmentService {
-  async getEnvironmentVariables(authClient, fileName, range, sheetId) {
-    const sheets = google.sheets({ version: "v4", auth: authClient });
-    const spreadsheetId = sheetId;
-
+  async getEnvironmentVariables(
+    auth,
+    fileName,
+    range,
+    spreadsheetId,
+    sheetName,
+  ) {
     try {
+      const sheets = google.sheets({ version: "v4", auth });
+
       const response = await sheets.spreadsheets.values.get({
         spreadsheetId,
-        range,
+        range: `${sheetName}!${range}`,
       });
 
       const rows = response.data.values;
@@ -24,7 +29,9 @@ export class EnvironmentService {
 
       console.log(chalk.green(`${fileName} files created successfully!`));
     } catch (error) {
-      console.error("Error fetching sheet data:", error);
+      throw new Error(
+        `Failed to fetch environment variables: ${error.message}`,
+      );
     }
   }
 }

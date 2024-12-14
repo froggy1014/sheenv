@@ -40,7 +40,7 @@
     "access": "public"
   },
   "lint-staged": {
-    "*.{js,ts}": [
+    "*.{js}": [
       "biome check --files-ignore-unknown=true --fix",
       "biome check --write --no-errors-on-unmatched",
       "biome check --write --organize-imports-enabled=false --no-errors-on-unmatched",
