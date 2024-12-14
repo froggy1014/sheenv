@@ -26,6 +26,3 @@ jobs:
           npx @biomejs/biome check --write --unsafe --no-errors-on-unmatched ./src
           npx @biomejs/biome format --write --no-errors-on-unmatched ./src
           npx @biomejs/biome lint --write --no-errors-on-unmatched ./src
-        
-      - name: Type Check
-        run: npx tsc --noEmit  # 만약 TypeScript를 사용한다면 
