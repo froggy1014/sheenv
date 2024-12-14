@@ -9,7 +9,7 @@
     "commit": "cz",
     "prepare": "husky",
     "ci:version": "changeset version",
-    "ci:publish": "node ./scripts/add-type-module.js && pnpm publish --access public",
+    "ci:publish": "node ./scripts/add-type-module.js && npm publish --access public",
     "release": "changeset publish"
   },
   "keywords": [],

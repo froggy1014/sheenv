@@ -3,9 +3,6 @@ on:
   push:
     branches:
       - main
-env:
-  CI: true
-  PNPM_CACHE_FOLDER: .pnpm-store
 
 permissions:
   contents: write
@@ -44,3 +41,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HUSKY: 0
+          
