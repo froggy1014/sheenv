@@ -2,8 +2,6 @@
 
 import { Command } from "commander";
 
-import path, { dirname } from "path";
-import { fileURLToPath } from "url";
 import chalk from "chalk";
 import { spin } from "tiny-spin";
 
@@ -12,18 +10,38 @@ import { EnvironmentService } from "../src/environment/EnvironmentService.js";
 
 import { OAuthService } from "../src/oauth/OAuthService.js";
 import { ProfilePrompts } from "../src/profile/ProfilePrompts.js";
-import { ProfileService } from "../src/profile/ProfileService.js";
-import { ProfileStorageService } from "../src/profile/ProfileStorageService.js";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const profilesDir = path.resolve(__dirname, "profiles");
+import { SheetsService } from "../src/sheets/SheetsService.js";
+import { WorkspacePrompts } from "../src/workspace/WorkspacePrompts.js";
+import { WorkspaceService } from "../src/workspace/WorkspaceService.js";
+import { WorkspaceStorageService } from "../src/workspace/WorkspaceStorageService.js";
 
 const envService = new EnvironmentService();
-const storageService = new ProfileStorageService(profilesDir);
-const profileService = new ProfileService(storageService);
+const workspaceStorageService = new WorkspaceStorageService();
+const workspaceService = new WorkspaceService(workspaceStorageService);
 
 const program = new Command();
+
+program
+  .command("workspace")
+  .description("Manage workspaces")
+  .addCommand(
+    new Command("add").description("Add new workspace").action(async () => {
+      try {
+        const workspaceData = await WorkspacePrompts.promptForWorkspace();
+        const result = await workspaceService.createWorkspace(
+          workspaceData.name,
+          workspaceData.sheetId,
+          workspaceData.clientId,
+          workspaceData.clientSecret,
+        );
+        console.log(
+          chalk.green(`Workspace ${result.name} created successfully`),
+        );
+      } catch (error) {
+        console.error(chalk.red(error.message));
+      }
+    }),
+  );
 
 program
   .command("profile")
@@ -33,15 +51,47 @@ program
       .description("Add new environment profile")
       .action(async () => {
         try {
-          const profileData = await ProfilePrompts.promptForProfile();
-          const result = await profileService.createProfile(
-            profileData.name,
-            profileData.sheet,
-            profileData.range,
-            profileData.sheetId,
-            profileData.clientId,
-            profileData.clientIdSecret,
+          const workspaces = workspaceService.getWorkspaceNames();
+          if (workspaces.length < 1) {
+            console.log(
+              chalk.yellow(
+                "Run `sheenv workspace add` to create a workspace first",
+              ),
+            );
+            process.exit(1);
+          }
+
+          const workspaceName =
+            await WorkspacePrompts.promptForSelectWorkspace(workspaces);
+          const workspace = workspaceService.getWorkspace(workspaceName);
+
+          const oAuthService = new OAuthService(
+            workspace.CLIENT_ID,
+            workspace.CLIENT_ID_SECRET,
           );
+          const stop = spin("Authenticating...");
+          const authClient = await oAuthService.getAuthToken();
+          stop();
+
+          const sheetsService = new SheetsService(authClient);
+          const fetchingStop = spin("Fetching sheets list...");
+          const sheetsList = await sheetsService.getSheetsList(
+            workspace.SHEET_ID,
+          );
+          fetchingStop();
+
+          if (sheetsList.length === 0) {
+            console.log(chalk.yellow("No sheets found in this spreadsheet"));
+            process.exit(1);
+          }
+
+          const profileData = await ProfilePrompts.promptForProfile(sheetsList);
+          const result = await workspaceService.addProfile(workspaceName, {
+            name: profileData.name,
+            sheet: profileData.sheet,
+            range: profileData.range,
+          });
+
           console.log(
             chalk.green(`Profile ${result.name} created successfully`),
           );
@@ -59,36 +109,50 @@ program
       .description("Fetch environment variables from Google Sheets")
       .action(async () => {
         try {
-          const choices = storageService.getProfileNames();
-
-          if (choices.length < 1) {
+          const workspaces = workspaceService.getWorkspaceNames();
+          if (workspaces.length < 1) {
             console.log(
-              chalk.yellow("Run `sheenv profile add` to use this command"),
+              chalk.yellow(
+                "Run `sheenv workspace add` to create a workspace first",
+              ),
             );
             process.exit(1);
           }
 
-          const envFileName = await envPrompts.promptForSelectProfile(choices);
+          const workspaceName =
+            await WorkspacePrompts.promptForSelectWorkspace(workspaces);
+          const workspace = workspaceService.getWorkspace(workspaceName);
 
-          const { RANGE, SHEET_ID, CLIENT_ID, CLIENT_ID_SECRET } =
-            storageService.getProfile(envFileName);
+          const profiles = workspace.profiles;
+          if (profiles.length < 1) {
+            console.log(
+              chalk.yellow(
+                "Run `sheenv profile add` to create a profile first",
+              ),
+            );
+            process.exit(1);
+          }
 
-          const oAuthService = new OAuthService(CLIENT_ID, CLIENT_ID_SECRET);
+          const profileChoices = profiles.map((p) => p.name);
+          const selectedProfile =
+            await envPrompts.promptForSelectProfile(profileChoices);
+          const profile = profiles.find((p) => p.name === selectedProfile);
+
+          const oAuthService = new OAuthService(
+            workspace.CLIENT_ID,
+            workspace.CLIENT_ID_SECRET,
+          );
 
           const stop = spin("Authenticating...");
           const authClient = await oAuthService.getAuthToken();
           stop();
 
-          if (!RANGE) {
-            console.error("Invalid profile format.");
-            return;
-          }
-
           await envService.getEnvironmentVariables(
             authClient,
-            envFileName,
-            RANGE,
-            SHEET_ID,
+            profile.name,
+            profile.range,
+            workspace.SHEET_ID,
+            profile.sheet,
           );
 
           process.exit(0);
