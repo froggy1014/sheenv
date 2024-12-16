@@ -64,6 +64,9 @@ workspace
 ```bash
 # Pull environment variables from Google Sheets
 sheenv env pull
+
+# Push local environment variables to Google Sheets
+sheenv env push
 ```
 
 ## Command Details

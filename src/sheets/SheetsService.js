@@ -35,4 +35,19 @@ export class SheetsService {
       throw new Error(`Failed to fetch sheets list: ${error.message}`);
     }
   }
+
+  async updateSheet(spreadsheetId, range, values) {
+    try {
+      await this.sheets.spreadsheets.values.update({
+        spreadsheetId,
+        range,
+        valueInputOption: "RAW",
+        resource: {
+          values: [values], // 1차원 배열을 2차원으로 변환
+        },
+      });
+    } catch (error) {
+      throw new Error(`Failed to update sheet: ${error.message}`);
+    }
+  }
 }

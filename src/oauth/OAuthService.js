@@ -11,7 +11,7 @@ export class OAuthService {
       "http://localhost:3000/oauth2callback",
     );
     this.scopes = [
-      "https://www.googleapis.com/auth/spreadsheets.readonly",
+      "https://www.googleapis.com/auth/spreadsheets",
       "https://www.googleapis.com/auth/drive.readonly",
       "https://www.googleapis.com/auth/drive.metadata.readonly",
     ];
@@ -48,13 +48,11 @@ export class OAuthService {
           const { tokens } = await this.oauth2Client.getToken(code);
           this.oauth2Client.setCredentials(tokens);
           stop();
-          res.send(`
-            <html>
-              <body style="display: flex; justify-content: center; align-items: center; height: 100vh;">
-                <h3>Authentication successful! Please close this window</h3>
-              </body>
-            </html>
-          `);
+          res.send(
+            '<html><body style="display: flex; justify-content: center; align-items: center; height: 100vh;">' +
+              "<h3>Authentication successful! Please close this window</h3>" +
+              "</body></html>",
+          );
           resolve(this.oauth2Client);
         } catch (error) {
           stop();

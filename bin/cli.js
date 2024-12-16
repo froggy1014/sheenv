@@ -305,6 +305,75 @@ program
           process.exit(1);
         }
       }),
+  )
+  .addCommand(
+    new Command("push")
+      .description("Push environment variables to Google Sheets")
+      .action(async () => {
+        try {
+          const workspaces = workspaceService.getWorkspaceNames();
+          if (workspaces.length < 1) {
+            console.log(
+              chalk.yellow(
+                "Run `sheenv workspace add` to create a workspace first",
+              ),
+            );
+            process.exit(1);
+          }
+
+          const workspaceName =
+            await WorkspacePrompts.promptForSelectWorkspace(workspaces);
+          const workspace = workspaceService.getWorkspace(workspaceName);
+
+          const profiles = workspace.profiles;
+          if (profiles.length < 1) {
+            console.log(
+              chalk.yellow(
+                "Run `sheenv profile add` to create a profile first",
+              ),
+            );
+            process.exit(1);
+          }
+
+          const profileChoices = profiles.map((p) => p.name);
+          const selectedProfile =
+            await envPrompts.promptForSelectProfile(profileChoices);
+          const profile = profiles.find((p) => p.name === selectedProfile);
+
+          const oAuthService = new OAuthService(
+            workspace.CLIENT_ID,
+            workspace.CLIENT_ID_SECRET,
+          );
+
+          let authClient;
+          if (workspace.authToken) {
+            authClient = await oAuthService.getAuthTokenFromCredentials(
+              workspace.authToken,
+            );
+          } else {
+            const stop = spin("Authenticating...");
+            authClient = await oAuthService.getAuthToken();
+            await workspaceService.updateWorkspaceAuthToken(
+              workspaceName,
+              authClient.credentials,
+            );
+            stop();
+          }
+
+          await envService.pushEnvironmentVariables(
+            authClient,
+            profile.name,
+            profile.range,
+            workspace.SHEET_ID,
+            profile.sheet,
+          );
+
+          process.exit(0);
+        } catch (error) {
+          console.error(chalk.red("Error:", error.message));
+          process.exit(1);
+        }
+      }),
   );
 
 program.parse(process.argv);
