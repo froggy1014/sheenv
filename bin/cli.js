@@ -30,18 +30,43 @@ program
   .addCommand(
     new Command("add").description("Add new workspace").action(async () => {
       try {
-        const workspaceData = await WorkspacePrompts.promptForWorkspace();
+        const credentials = await WorkspacePrompts.promptForCredentials();
+
+        const oAuthService = new OAuthService(
+          credentials.clientId,
+          credentials.clientSecret,
+        );
+        const stop = spin("Authenticating with Google...");
+        const authClient = await oAuthService.getAuthToken();
+        stop();
+
+        const sheetsService = new SheetsService(authClient);
+        const fetchingStop = spin("Fetching your spreadsheets...");
+        const spreadsheets = await sheetsService.getSpreadsheetsList();
+        fetchingStop();
+
+        if (spreadsheets.length === 0) {
+          console.log(
+            chalk.yellow("No spreadsheets found in your Google Drive"),
+          );
+          process.exit(1);
+        }
+
+        const workspaceDetails =
+          await WorkspacePrompts.promptForWorkspaceDetails(spreadsheets);
         const result = await workspaceService.createWorkspace(
-          workspaceData.name,
-          workspaceData.sheetId,
-          workspaceData.clientId,
-          workspaceData.clientSecret,
+          workspaceDetails.name,
+          workspaceDetails.sheetId,
+          credentials.clientId,
+          credentials.clientSecret,
         );
         console.log(
           chalk.green(`Workspace ${result.name} created successfully`),
         );
+        process.exit(0);
       } catch (error) {
         console.error(chalk.red(error.message));
+        process.exit(1);
       }
     }),
   )

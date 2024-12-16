@@ -1,10 +1,7 @@
-import http from "http";
-import url from "url";
 import express from "express";
 import { google } from "googleapis";
 import open from "open";
 import { spin } from "tiny-spin";
-import { OAuthConfig } from "./OauthConfig.js";
 
 export class OAuthService {
   constructor(clientId, clientSecret) {
@@ -13,12 +10,17 @@ export class OAuthService {
       clientSecret,
       "http://localhost:3000/oauth2callback",
     );
+    this.scopes = [
+      "https://www.googleapis.com/auth/spreadsheets.readonly",
+      "https://www.googleapis.com/auth/drive.readonly",
+      "https://www.googleapis.com/auth/drive.metadata.readonly",
+    ];
   }
 
   async getAuthToken() {
     const authUrl = this.oauth2Client.generateAuthUrl({
       access_type: "offline",
-      scope: OAuthConfig.scopes,
+      scope: this.scopes,
     });
 
     await open(authUrl);
@@ -49,7 +51,7 @@ export class OAuthService {
           res.send(`
             <html>
               <body style="display: flex; justify-content: center; align-items: center; height: 100vh;">
-                <h3>Environment Create Successfully. Please close this tab</h3>
+                <h3>Authentication successful! Please close this window</h3>
               </body>
             </html>
           `);
@@ -63,41 +65,17 @@ export class OAuthService {
         }
       });
 
-      const server = app.listen(OAuthConfig.PORT);
+      const server = app.listen(3000);
     });
   }
 
   async getAuthTokenFromCredentials(credentials) {
     try {
       this.oauth2Client.setCredentials(credentials);
-      // Verify token is still valid
       await this.oauth2Client.getAccessToken();
       return this.oauth2Client;
     } catch (error) {
-      // If token is expired or invalid, get new token
       return this.getAuthToken();
     }
-  }
-
-  getAuthorizationCode() {
-    return new Promise((resolve, reject) => {
-      const server = http
-        .createServer(async (req, res) => {
-          try {
-            const queryObject = url.parse(req.url, true).query;
-            const code = queryObject.code;
-            res.end("Authentication successful! You can close this window.");
-            server.close();
-            resolve(code);
-          } catch (error) {
-            reject(error);
-          }
-        })
-        .listen(3000);
-    });
-  }
-
-  getClient() {
-    return this.oauth2Client;
   }
 }
