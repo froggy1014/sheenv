@@ -63,4 +63,17 @@ export class WorkspaceStorageService {
     const workspace = this.getWorkspace(workspaceName);
     return workspace.profiles || [];
   }
+
+  updateWorkspaceAuthToken(workspaceName, authToken) {
+    const filePath = path.join(this.workspacesDir, `${workspaceName}.json`);
+    if (!fs.existsSync(filePath)) {
+      throw new Error(`Workspace ${workspaceName} not found`);
+    }
+
+    const workspace = JSON.parse(fs.readFileSync(filePath, "utf8"));
+    workspace.authToken = authToken;
+
+    fs.writeFileSync(filePath, JSON.stringify(workspace, null, 2));
+    return workspace;
+  }
 }

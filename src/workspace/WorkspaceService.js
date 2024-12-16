@@ -29,4 +29,11 @@ export class WorkspaceService {
   getProfiles(workspaceName) {
     return this.storageService.getProfiles(workspaceName);
   }
+
+  async updateWorkspaceAuthToken(workspaceName, authToken) {
+    return this.storageService.updateWorkspaceAuthToken(
+      workspaceName,
+      authToken,
+    );
+  }
 }

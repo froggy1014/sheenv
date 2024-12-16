@@ -72,7 +72,6 @@ program
             profiles: workspace.profiles,
           };
 
-          // Get desktop path
           const desktopPath = `${
             process.env.HOME || process.env.USERPROFILE
           }/Desktop`;
@@ -120,6 +119,7 @@ program
             configData.sheetId,
             configData.clientId,
             configData.clientSecret,
+            configData.authToken,
           );
 
           if (configData.profiles) {
@@ -172,6 +172,12 @@ program
           const authClient = await oAuthService.getAuthToken();
           stop();
 
+          // Save auth token to workspace
+          await workspaceService.updateWorkspaceAuthToken(
+            workspaceName,
+            authClient.credentials,
+          );
+
           const sheetsService = new SheetsService(authClient);
           const fetchingStop = spin("Fetching sheets list...");
           const sheetsList = await sheetsService.getSheetsList(
@@ -194,8 +200,11 @@ program
           console.log(
             chalk.green(`Profile ${result.name} created successfully`),
           );
+
+          process.exit(0);
         } catch (error) {
           console.error(chalk.red(error.message));
+          process.exit(1);
         }
       }),
   );
@@ -242,9 +251,20 @@ program
             workspace.CLIENT_ID_SECRET,
           );
 
-          const stop = spin("Authenticating...");
-          const authClient = await oAuthService.getAuthToken();
-          stop();
+          let authClient;
+          if (workspace.authToken) {
+            authClient = await oAuthService.getAuthTokenFromCredentials(
+              workspace.authToken,
+            );
+          } else {
+            const stop = spin("Authenticating...");
+            authClient = await oAuthService.getAuthToken();
+            await workspaceService.updateWorkspaceAuthToken(
+              workspaceName,
+              authClient.credentials,
+            );
+            stop();
+          }
 
           await envService.getEnvironmentVariables(
             authClient,
