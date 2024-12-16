@@ -1,5 +1,11 @@
 # sheenv
 
+## 1.0.0
+
+### Major Changes
+
+- 78695bd: README update and version 1.0
+
 ## 0.4.0
 
 ### Minor Changes
