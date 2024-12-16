@@ -1,5 +1,12 @@
 # sheenv
 
+## 0.3.0
+
+### Minor Changes
+
+- 85c8595: store authToken in workspace
+- 26389aa: add workspace import/export functionality
+
 ## 0.2.0
 
 ### Minor Changes
