@@ -1,5 +1,11 @@
 # sheenv
 
+## 1.1.0
+
+### Minor Changes
+
+- 00fb539: add environment batch push
+
 ## 1.0.0
 
 ### Major Changes
