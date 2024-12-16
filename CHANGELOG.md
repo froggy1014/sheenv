@@ -1,5 +1,11 @@
 # sheenv
 
+## 0.4.0
+
+### Minor Changes
+
+- 09be232: get spreadSheet list from clientId and clientSecret
+
 ## 0.3.0
 
 ### Minor Changes
